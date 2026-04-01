@@ -9,11 +9,10 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async  => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
     setTimeout(() => {
       console.log("Login attempt:", { email, password, rememberMe });
       alert(`Welcome back, ${email}! (Demo login)`);
@@ -39,7 +38,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="rounded-2xl bg-white/80 p-8 shadow-xl backdrop-blur-sm dark:bg-zinc-900/80 dark:shadow-2xl">
+        <div className="rounded-3xl bg-white/80 p-8 shadow-xl backdrop-blur-sm dark:bg-zinc-900/80 dark:shadow-2xl">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
               Welcome back
