@@ -25,7 +25,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo / Brand */}
         <div className="mb-8 flex justify-center">
-          <div className="rounded-full bg-white p-2 shadow-md dark:bg-zinc-800">
+          <div className="rounded-full bg-slate-700 p-2 shadow-md dark:bg-zinc-800">
             <Image
               src="/next.svg"
               alt="Logo"
