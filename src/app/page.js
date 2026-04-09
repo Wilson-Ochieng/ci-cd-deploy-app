@@ -38,7 +38,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="rounded-3xl bg-slate-700 p-8 shadow-xl backdrop-blur-sm dark:bg-zinc-900/80 dark:shadow-2xl">
+        <div className="rounded-3xl bg-white/80 p-8 shadow-xl backdrop-blur-sm dark:bg-zinc-900/80 dark:shadow-2xl">
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
               Welcome back
