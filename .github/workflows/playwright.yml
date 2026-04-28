@@ -10,17 +10,76 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
+    # PostgreSQL service container
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: loadlink_user
+          POSTGRES_PASSWORD: yourpassword
+          POSTGRES_DB: loadlink
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
+
+    # Install frontend dependencies (if any) – but we also need backend
     - name: Install dependencies
       run: npm ci
+
+    # Install backend dependencies (assuming backend code is in same repo, e.g. `backend/` folder)
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm ci
+      working-directory: ./
+
+    # Wait for PostgreSQL to be ready
+    - name: Wait for PostgreSQL
+      run: until pg_isready -h localhost -p 5432; do sleep 1; done
+
+    # Run database migrations (create tables)
+    - name: Setup database schema
+      run: |
+        PGPASSWORD=yourpassword psql -h localhost -U loadlink_user -d loadlink -f schema.sql
+      working-directory: ./backend   # assuming schema.sql is in backend folder
+
+    # Start backend server in background
+    - name: Start backend
+      run: |
+        cd backend
+        node server.js &
+        npx wait-on http://localhost:5000
+      env:
+        DB_HOST: localhost
+        DB_USER: loadlink_user
+        DB_PASSWORD: yourpassword
+        DB_NAME: loadlink
+        JWT_SECRET: test_secret
+        ADMIN_SECRET: supersecretkey123
+      working-directory: ./
+
+    # Install Playwright browsers
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
+    # Run Playwright tests (backend must be live)
     - name: Run Playwright tests
       run: npx playwright test
+      env:
+        BASE_URL: http://localhost:3000   # If your frontend runs, else tests may hit API directly
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -35,9 +94,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Deploy to Vercel
-      uses: amondnet/vercel-action@v25   # Use the latest stable
+      uses: amondnet/vercel-action@v25
       with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}   # Must be named vercel-token
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
         vercel-args: '--prod'
