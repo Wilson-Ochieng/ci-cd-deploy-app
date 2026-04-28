@@ -15,6 +15,7 @@ import {
   Navigation,
   CheckCircle,
   Clock,
+  Shield,
   AlertCircle,
 } from "lucide-react";
 
@@ -49,6 +50,7 @@ export default function DashboardPage() {
   const navItems = [
     { id: "overview", name: "Overview", icon: ClipboardList },
     { id: "loads", name: "My Loads", icon: Package, roles: ["shipper"] },
+    { id: 'admin', name: 'Admin Panel', icon: Shield, roles: ['admin'] },
     {
       id: "post-load",
       name: "Post a Load",
@@ -67,6 +69,15 @@ export default function DashboardPage() {
   const filteredNav = navItems.filter(
     (item) => !item.roles || item.roles.includes(user.role),
   );
+  {user.role === 'admin' && (
+  <button
+    onClick={() => router.push('/admin')}
+    className="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+  >
+    <Shield className="h-5 w-5" />
+    <span>Admin Panel</span>
+  </button>
+)}
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
